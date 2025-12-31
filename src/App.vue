@@ -1,26 +1,17 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div class="min-h-screen flex items-center justify-center">
-    <h1 class="text-3xl font-bold underline italic">
-      Vue + Tailwind is working ✅
-    </h1>
-  </div>
+  <component :is="layout">
+    <RouterView />
+  </component>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<script setup>
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import DefaultLayout from "@/layouts/DefaultLayout.vue";
+import AuthLayout from "@/layouts/AuthLayout.vue";
+
+const route = useRoute();
+const layout = computed(() =>
+  route.meta.layout === "auth" ? AuthLayout : DefaultLayout
+);
+</script>

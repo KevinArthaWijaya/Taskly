@@ -1,5 +1,17 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
+import { createApp } from "vue";
+import "./styles/tailwind.css";
+import App from "./App.vue";
+import router from "./router";
+import { createPinia } from "pinia";
+import { useAuthStore } from "@/stores/auth";
 
-createApp(App).mount('#app')
+const app = createApp(App);
+
+const pinia = createPinia();
+app.use(pinia);
+
+const auth = useAuthStore(pinia);
+auth.init();
+
+app.use(router);
+app.mount("#app");
