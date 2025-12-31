@@ -6,8 +6,10 @@ import Signup from "@/pages/Signup.vue";
 import ForgotPassword from "@/pages/ForgotPassword.vue";
 
 const routes = [
-  { path: "/", name: "home", component: Home },
+  // Default landing page
+  { path: "/", redirect: "/login" },
 
+  // Auth pages
   { path: "/login", name: "login", component: Login, meta: { layout: "auth" } },
   {
     path: "/signup",
@@ -22,8 +24,11 @@ const routes = [
     meta: { layout: "auth" },
   },
 
-  // optional: fallback 404
-  { path: "/:pathMatch(.*)*", redirect: "/" },
+  // App pages
+  { path: "/home", name: "home", component: Home },
+
+  // Fallback 404
+  { path: "/:pathMatch(.*)*", redirect: "/login" },
 ];
 
 const router = createRouter({
