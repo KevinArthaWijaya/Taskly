@@ -399,7 +399,7 @@ const onSubmit = async () => {
     await new Promise((r) => setTimeout(r, 550));
     showToast("Demo login success ✅ (no data saved)", "success");
 
-    router.replace("/");
+    router.replace("/Home");
   } catch (e) {
     error.value = e?.message || "Login gagal (demo).";
     showToast("Demo error.", "error");

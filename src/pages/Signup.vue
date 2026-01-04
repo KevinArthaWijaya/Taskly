@@ -524,7 +524,7 @@ const emailError = computed(() => {
 const passwordError = computed(() => {
   const p = password.value || "";
   if (!p) return "Password wajib diisi.";
-  if (p.length < 8) return "Password minimal 8 karakter.";
+  if (p.length < 6) return "Password minimal 6 karakter.";
   if (!/[0-9]/.test(p)) return "Tambahkan minimal 1 angka.";
   if (!/[A-Z]/.test(p)) return "Tambahkan minimal 1 huruf kapital.";
   return "";

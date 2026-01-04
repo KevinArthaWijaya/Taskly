@@ -1,152 +1,483 @@
+<!-- src/pages/Home.vue -->
 <template>
-  <div class="min-h-screen bg-slate-50">
-    <div class="mx-auto max-w-7xl px-4 py-6 lg:py-8">
-      <!-- Layout -->
-      <div class="grid gap-6 lg:grid-cols-[260px_1fr] items-start">
-        <!-- Sidebar -->
-        <aside
-          class="rounded-3xl bg-white ring-1 ring-slate-100 shadow-[0_18px_60px_rgba(15,23,42,0.06)] overflow-hidden"
-        >
-          <!-- Brand -->
-          <div class="px-6 py-5 flex items-center gap-3">
-            <img
-              :src="logo"
-              alt="Taskly"
-              class="h-9 w-auto select-none"
-              draggable="false"
-            />
+  <!-- FULLSCREEN (tanpa padding luar) -->
+  <div class="fixed inset-0 bg-slate-50 overflow-hidden">
+    <div class="h-full w-full flex">
+      <!-- Sidebar -->
+      <aside
+        class="w-[280px] h-full bg-white border-r border-slate-100 flex flex-col"
+      >
+        <!-- Brand -->
+        <div class="px-6 py-5 flex flex-col items-center justify-center">
+          <img
+            :src="logo"
+            alt="Taskly"
+            class="h-9 w-auto select-none"
+            draggable="false"
+          />
+
+          <div
+            class="mt-3 mx-auto inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[12px] font-bold text-slate-700"
+          >
+            <span class="inline-block h-2 w-2 rounded-full bg-sky-500"></span>
+            Demo mode (UI only)
           </div>
+        </div>
 
-          <!-- Nav -->
-          <nav class="px-3 pb-5">
-            <button
-              v-for="item in nav"
-              :key="item.key"
-              type="button"
-              class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[13px] font-semibold tracking-[1px] transition"
-              :class="
-                item.key === activeNav
-                  ? 'bg-sky-50 text-slate-900 ring-1 ring-sky-100'
-                  : 'text-slate-600 hover:bg-slate-50'
-              "
-              @click="activeNav = item.key"
-            >
-              <span
-                class="h-10 w-10 rounded-2xl grid place-items-center"
-                :class="item.key === activeNav ? 'bg-white' : 'bg-slate-50'"
-              >
-                <component :is="item.icon" />
-              </span>
-              <span>{{ item.label }}</span>
-            </button>
-          </nav>
-
-          <!-- Sidebar Illustration -->
-          <div class="px-4 pb-6">
-            <div
-              class="rounded-3xl bg-gradient-to-br from-sky-50 via-white to-indigo-50 ring-1 ring-slate-100/70 overflow-hidden h-[220px] relative"
+        <!-- Nav -->
+        <nav class="px-4 mt-2 space-y-3">
+          <button
+            v-for="item in nav"
+            :key="item.key"
+            type="button"
+            class="w-full flex items-center gap-3 px-4 py-4 rounded-2xl text-[13px] font-semibold transition"
+            :class="
+              item.key === activeNav
+                ? 'bg-sky-50 text-slate-900 ring-1 ring-sky-100'
+                : 'text-slate-600 hover:bg-slate-50'
+            "
+            @click="activeNav = item.key"
+          >
+            <span
+              class="h-10 w-10 rounded-2xl grid place-items-center"
+              :class="item.key === activeNav ? 'bg-white' : 'bg-slate-50'"
             >
               <img
-                :src="illustration"
-                alt="Illustration"
-                class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[260px] select-none pointer-events-none"
+                :src="item.icon"
+                alt=""
+                class="h-5 w-5 select-none pointer-events-none"
                 draggable="false"
               />
-            </div>
-          </div>
-        </aside>
+            </span>
+            <span>{{ item.label }}</span>
+          </button>
+        </nav>
 
-        <!-- Main -->
-        <main
-          class="rounded-3xl bg-white ring-1 ring-slate-100 shadow-[0_18px_60px_rgba(15,23,42,0.06)] overflow-hidden"
-        >
-          <!-- Topbar -->
+        <!-- Spacer -->
+        <div class="flex-1"></div>
+
+        <!-- Bottom card (biar mirip referensi: ada panel rounded di bawah) -->
+        <div class="p-4">
           <div
-            class="px-6 py-5 border-b border-slate-100 flex items-center justify-between gap-4"
+            class="h-[250px] rounded-3xl bg-gradient-to-br from-sky-50 via-white to-indigo-50 ring-1 ring-slate-100/70 overflow-hidden relative"
           >
-            <div>
-              <h1
-                class="text-[18px] font-extrabold text-slate-900 tracking-[1px]"
-              >
-                Hello, {{ userName }}
-              </h1>
-              <p class="mt-1 text-[13px] text-slate-500">
-                Here's what you need to focus on today.
-              </p>
-            </div>
-
-            <div class="flex items-center gap-3">
-              <!-- Search -->
-              <button
-                type="button"
-                class="h-10 w-10 rounded-2xl hover:bg-slate-50 active:bg-slate-100 grid place-items-center text-slate-600"
-                @click="toast('Demo only: Search UI.')"
-                aria-label="Search"
-              >
-                <SearchIcon />
-              </button>
-
-              <!-- Bell -->
-              <button
-                type="button"
-                class="h-10 w-10 rounded-2xl hover:bg-slate-50 active:bg-slate-100 grid place-items-center text-slate-600 relative"
-                @click="toast('Demo only: Notifications UI.')"
-                aria-label="Notifications"
-              >
-                <BellIcon />
-                <span
-                  class="absolute top-2 right-2 h-2 w-2 rounded-full bg-amber-400"
-                ></span>
-              </button>
-
-              <!-- Avatar -->
-              <button
-                type="button"
-                class="h-10 w-10 rounded-2xl bg-slate-900 text-white grid place-items-center text-[12px] font-extrabold"
-                @click="toast('Demo only: Profile menu.')"
-                aria-label="Profile"
-              >
-                {{ initials }}
-              </button>
-            </div>
+            <!-- sengaja kosong, ilustrasi orangnya kita taruh di luar sidebar (biar seperti gambar referensi) -->
           </div>
+        </div>
+      </aside>
 
-          <!-- Content -->
-          <div class="p-6">
-            <div class="grid gap-6 lg:grid-cols-[1fr_320px] items-start">
-              <!-- Left -->
-              <section>
-                <!-- Stats -->
-                <div class="flex flex-wrap gap-3">
-                  <StatPill label="Today" :value="todayCount" tone="sky" />
-                  <StatPill label="Overdue" :value="overdueCount" tone="rose" />
-                  <StatPill
-                    label="Completed"
-                    :value="completedCount"
-                    tone="emerald"
+      <!-- Main -->
+      <main class="flex-1 h-full bg-white overflow-hidden">
+        <!-- Topbar -->
+        <div
+          class="h-[72px] px-10 flex items-center justify-end border-b border-slate-100"
+        >
+          <div class="flex items-center gap-3">
+            <!-- Search (md+ tampil input) -->
+            <div class="hidden md:block">
+              <div class="relative">
+                <svg
+                  class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Z"
+                    stroke="currentColor"
+                    stroke-width="2"
                   />
+                  <path
+                    d="M20 20l-4.2-4.2"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+
+                <input
+                  v-model="searchQuery"
+                  type="text"
+                  placeholder="Search tasks..."
+                  class="h-10 w-[260px] rounded-2xl border border-slate-200 bg-white pl-11 pr-10 text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-sky-100"
+                />
+
+                <button
+                  v-if="searchQuery"
+                  type="button"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl hover:bg-slate-50 text-slate-500 grid place-items-center"
+                  aria-label="Clear search"
+                  @click="searchQuery = ''"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M18 6L6 18M6 6l12 12"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Notifications -->
+            <div ref="notifRef" class="relative">
+              <button
+                class="h-10 w-10 rounded-2xl hover:bg-slate-50 active:bg-slate-100 grid place-items-center text-slate-600 relative"
+                type="button"
+                aria-label="Notifications"
+                @click.stop="notifOpen = !notifOpen"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 7h18s-3 0-3-7Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M13.7 21a2 2 0 0 1-3.4 0"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+
+                <!-- unread badge -->
+                <span
+                  v-if="unreadCount > 0"
+                  class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-extrabold grid place-items-center"
+                >
+                  {{ unreadCount > 9 ? "9+" : unreadCount }}
+                </span>
+              </button>
+
+              <!-- Dropdown -->
+              <div
+                v-if="notifOpen"
+                class="absolute right-0 mt-3 w-[340px] rounded-2xl bg-white border border-slate-100 shadow-[0_18px_60px_rgba(15,23,42,0.12)] overflow-hidden z-50"
+                @click.stop
+              >
+                <div
+                  class="px-4 py-3 flex items-center justify-between border-b border-slate-100"
+                >
+                  <p
+                    class="text-[12px] font-extrabold tracking-[2px] text-slate-900"
+                  >
+                    Notifications
+                  </p>
+
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      class="text-[12px] font-semibold text-slate-600 hover:underline"
+                      @click="markAllRead"
+                    >
+                      Mark all read
+                    </button>
+                    <button
+                      type="button"
+                      class="text-[12px] font-semibold text-rose-600 hover:underline"
+                      @click="clearAllNotifs"
+                    >
+                      Clear
+                    </button>
+                  </div>
                 </div>
 
-                <!-- Today tasks header -->
-                <div class="mt-6 flex items-center justify-between">
+                <div class="max-h-[360px] overflow-y-auto">
+                  <div
+                    v-if="notifications.length === 0"
+                    class="px-4 py-8 text-center text-[13px] text-slate-500"
+                  >
+                    No notifications yet.
+                  </div>
+
+                  <button
+                    v-for="n in notifications"
+                    :key="n.id"
+                    type="button"
+                    class="w-full text-left px-4 py-3 border-b border-slate-100 hover:bg-slate-50 transition"
+                    @click="markRead(n.id)"
+                  >
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                          <span
+                            class="text-[11px] font-bold px-2 py-1 rounded-full"
+                            :class="notifTone(n.type)"
+                          >
+                            {{ n.type }}
+                          </span>
+                          <p
+                            class="text-[13px] font-extrabold truncate"
+                            :class="
+                              n.read ? 'text-slate-500' : 'text-slate-900'
+                            "
+                          >
+                            {{ n.title }}
+                          </p>
+                        </div>
+
+                        <p class="mt-1 text-[12px] text-slate-600">
+                          {{ n.message }}
+                        </p>
+
+                        <p class="mt-2 text-[11px] text-slate-400">
+                          {{ timeAgo(n.ts) }}
+                        </p>
+                      </div>
+
+                      <span
+                        v-if="!n.read"
+                        class="mt-1 h-2 w-2 rounded-full bg-sky-500"
+                      ></span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Avatar Dropdown -->
+            <div ref="avatarRef" class="relative">
+              <button
+                type="button"
+                class="h-10 w-10 rounded-full overflow-hidden ring-1 ring-slate-200"
+                aria-label="Profile menu"
+                @click.stop="avatarOpen = !avatarOpen"
+              >
+                <img
+                  :src="avatar"
+                  alt="avatar"
+                  class="h-full w-full object-cover select-none pointer-events-none"
+                  draggable="false"
+                />
+              </button>
+
+              <!-- Dropdown -->
+              <div
+                v-if="avatarOpen"
+                class="absolute right-0 mt-3 w-[220px] rounded-2xl bg-white border border-slate-100 shadow-[0_18px_60px_rgba(15,23,42,0.12)] overflow-hidden z-50"
+                @click.stop
+              >
+                <button
+                  type="button"
+                  class="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition text-left"
+                  @click="
+                    goProfile();
+                    avatarOpen = false;
+                  "
+                >
+                  <!-- user icon -->
+                  <span
+                    class="h-9 w-9 rounded-2xl bg-sky-50 text-sky-600 grid place-items-center"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M15 7.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M4.5 20.25a7.5 7.5 0 0 1 15 0"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="text-[13px] font-extrabold text-slate-900">
+                      Profile
+                    </p>
+                    <p class="text-[12px] text-slate-500">View your info</p>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  class="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition text-left"
+                  @click="
+                    goSettings();
+                    avatarOpen = false;
+                  "
+                >
+                  <!-- settings icon -->
+                  <span
+                    class="h-9 w-9 rounded-2xl bg-slate-50 text-slate-700 grid place-items-center"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M10.5 3h3l.4 2a7.7 7.7 0 0 1 1.7.7l1.8-1.1 2.1 2.1-1.1 1.8c.3.5.5 1.1.7 1.7l2 .4v3l-2 .4a7.7 7.7 0 0 1-.7 1.7l1.1 1.8-2.1 2.1-1.8-1.1c-.5.3-1.1.5-1.7.7l-.4 2h-3l-.4-2a7.7 7.7 0 0 1-1.7-.7l-1.8 1.1-2.1-2.1 1.1-1.8a7.7 7.7 0 0 1-.7-1.7l-2-.4v-3l2-.4c.2-.6.4-1.2.7-1.7L2.6 6.7 4.7 4.6l1.8 1.1c.5-.3 1.1-.5 1.7-.7l.4-2Z"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="text-[13px] font-extrabold text-slate-900">
+                      Settings
+                    </p>
+                    <p class="text-[12px] text-slate-500">Preferences</p>
+                  </div>
+                </button>
+
+                <div class="h-px bg-slate-100"></div>
+
+                <button
+                  type="button"
+                  class="w-full px-4 py-3 flex items-center gap-3 hover:bg-rose-50 transition text-left"
+                  @click="
+                    doLogout();
+                    avatarOpen = false;
+                  "
+                >
+                  <!-- logout icon -->
+                  <span
+                    class="h-9 w-9 rounded-2xl bg-rose-50 text-rose-600 grid place-items-center"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M15 3h2a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4h-2"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M10 17l5-5-5-5"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M15 12H3"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="text-[13px] font-extrabold text-rose-700">
+                      Logout
+                    </p>
+                    <p class="text-[12px] text-rose-600/70">Sign out</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content (scroll kalau perlu) -->
+        <div class="h-[calc(100%-72px)] overflow-y-auto">
+          <div class="px-10 py-8">
+            <div class="grid gap-8 lg:grid-cols-[1fr_360px] items-start">
+              <!-- LEFT -->
+              <section>
+                <!-- Greeting (dibawah header/topbar) -->
+                <div class="mb-6">
+                  <h1
+                    class="text-[18px] font-extrabold text-slate-900 tracking-[0.5px]"
+                  >
+                    Hello, {{ userName }}
+                  </h1>
+                  <p class="mt-1 text-[13px] text-slate-500">
+                    Here's what you need to focus on today.
+                  </p>
+                </div>
+
+                <!-- Stats pills (sesuai referensi: biru merah hijau) -->
+                <div class="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    @click="activeList = 'today'"
+                    class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-extrabold text-[12px] tracking-[2px] flex items-center gap-4"
+                    :class="
+                      activeList === 'today'
+                        ? 'ring-4 ring-blue-100'
+                        : 'opacity-90 hover:opacity-100'
+                    "
+                  >
+                    <span>Today</span>
+                    <span class="text-[14px]">{{ todayCount }}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    @click="activeList = 'overdue'"
+                    class="px-5 py-3 rounded-2xl bg-rose-600 text-white font-extrabold text-[12px] tracking-[2px] flex items-center gap-4"
+                    :class="
+                      activeList === 'overdue'
+                        ? 'ring-4 ring-rose-100'
+                        : 'opacity-90 hover:opacity-100'
+                    "
+                  >
+                    <span>Overdue</span>
+                    <span class="text-[14px]">{{ overdueCount }}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    @click="activeList = 'completed'"
+                    class="px-5 py-3 rounded-2xl bg-emerald-600 text-white font-extrabold text-[12px] tracking-[2px] flex items-center gap-4"
+                    :class="
+                      activeList === 'completed'
+                        ? 'ring-4 ring-emerald-100'
+                        : 'opacity-90 hover:opacity-100'
+                    "
+                  >
+                    <span>Completed</span>
+                    <span class="text-[14px]">{{ completedCount }}</span>
+                  </button>
+                </div>
+
+                <!-- Header -->
+                <div class="mt-8 flex items-center justify-between">
                   <h2
                     class="text-[14px] font-extrabold tracking-[2px] text-slate-900"
                   >
-                    Today Tasks
+                    {{ listTitle }}
                   </h2>
+
                   <div class="text-[12px] text-slate-500">
-                    {{ todayTasks.length }} item(s)
+                    {{ visibleTasks.length }} item(s)
                   </div>
                 </div>
 
                 <!-- Task list -->
-                <div class="mt-3 space-y-3">
+                <div class="mt-4 space-y-4">
                   <div
-                    v-for="t in todayTasks"
-                    :key="t.id"
-                    class="rounded-2xl border border-slate-100 bg-white px-4 py-4 flex items-start justify-between gap-4 hover:shadow-sm transition"
+                    v-if="visibleTasks.length === 0"
+                    class="rounded-2xl border border-slate-100 bg-white px-6 py-8 text-center text-[13px] text-slate-500"
                   >
-                    <div class="flex items-start gap-3">
+                    No tasks found for "<span
+                      class="font-semibold text-slate-700"
+                      >{{ searchQuery }}</span
+                    >"
+                  </div>
+
+                  <div
+                    v-for="t in visibleTasks"
+                    :key="t.id"
+                    class="rounded-2xl bg-white border border-slate-100 shadow-[0_10px_30px_rgba(15,23,42,0.04)] px-6 py-5 flex items-start justify-between gap-6"
+                  >
+                    <div class="flex items-start gap-4">
                       <button
                         type="button"
                         class="mt-1 h-6 w-6 rounded-lg border border-slate-200 grid place-items-center"
@@ -175,31 +506,36 @@
                         </svg>
                       </button>
 
-                      <div>
-                        <div class="flex flex-wrap items-center gap-2">
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-3 flex-wrap">
                           <p
-                            class="text-[13px] font-bold text-slate-900"
-                            :class="t.done ? 'line-through text-slate-400' : ''"
+                            class="text-[13px] font-extrabold"
+                            :class="
+                              t.done
+                                ? 'line-through text-slate-400'
+                                : 'text-slate-900'
+                            "
                           >
                             {{ t.title }}
                           </p>
+
                           <span
-                            class="text-[11px] font-semibold px-2 py-0.5 rounded-full ring-1"
-                            :class="priorityBadge(t.priority)"
+                            class="text-[11px] font-bold px-2 py-1 rounded-full"
+                            :class="priorityPill(t.priority)"
                           >
                             {{ t.priority }}
                           </span>
                         </div>
 
                         <p class="mt-1 text-[12px] text-slate-500">
-                          {{ t.when }}
+                          {{ formatWhen(t.dueAt) }}
                         </p>
 
-                        <div class="mt-2 flex flex-wrap gap-2">
+                        <div class="mt-3 flex flex-wrap gap-2">
                           <span
                             v-for="tag in t.tags"
                             :key="tag"
-                            class="text-[11px] font-semibold text-slate-500 bg-slate-50 ring-1 ring-slate-100 px-2 py-1 rounded-full"
+                            class="text-[11px] font-semibold text-slate-500 bg-slate-50 ring-1 ring-slate-100 px-3 py-1 rounded-full"
                           >
                             #{{ tag }}
                           </span>
@@ -209,101 +545,191 @@
 
                     <button
                       type="button"
-                      class="h-9 w-9 rounded-xl hover:bg-slate-50 active:bg-slate-100 grid place-items-center text-slate-500"
-                      @click="toast('Demo only: Task menu.')"
+                      class="h-10 w-10 rounded-2xl hover:bg-slate-50 active:bg-slate-100 grid place-items-center text-slate-500"
                       aria-label="Task menu"
                     >
-                      <DotsIcon />
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M12 6h.01"
+                          stroke="currentColor"
+                          stroke-width="4"
+                          stroke-linecap="round"
+                        />
+                        <path
+                          d="M12 12h.01"
+                          stroke="currentColor"
+                          stroke-width="4"
+                          stroke-linecap="round"
+                        />
+                        <path
+                          d="M12 18h.01"
+                          stroke="currentColor"
+                          stroke-width="4"
+                          stroke-linecap="round"
+                        />
+                      </svg>
                     </button>
                   </div>
                 </div>
               </section>
 
-              <!-- Right panel -->
+              <!-- RIGHT -->
               <aside class="space-y-6">
-                <!-- Quick actions -->
+                <!-- Quick Actions -->
                 <div
-                  class="rounded-2xl border border-slate-100 overflow-hidden bg-white"
+                  class="rounded-2xl bg-white border border-slate-100 shadow-[0_10px_30px_rgba(15,23,42,0.04)] p-5"
                 >
-                  <div class="px-4 py-3 flex items-center justify-between">
-                    <p
-                      class="text-[12px] font-extrabold tracking-[2px] text-slate-900"
-                    >
-                      Quick Actions
-                    </p>
+                  <p
+                    class="text-[12px] font-extrabold tracking-[2px] text-slate-900"
+                  >
+                    Quick Actions
+                  </p>
 
+                  <div class="mt-4 space-y-3">
                     <button
-                      type="button"
-                      class="h-9 w-9 rounded-xl hover:bg-slate-50 active:bg-slate-100 grid place-items-center text-slate-500"
-                      @click="showQuick = !showQuick"
-                      aria-label="Toggle actions"
-                    >
-                      <ChevronIcon
-                        :class="showQuick ? 'rotate-90' : ''"
-                        class="transition"
-                      />
-                    </button>
-                  </div>
-
-                  <div v-show="showQuick" class="px-4 pb-4 space-y-2">
-                    <button
-                      type="button"
-                      class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition"
-                      @click="toast('Demo only: Add task UI.')"
+                      class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 flex items-center justify-between hover:bg-slate-50 transition"
                     >
                       <span class="flex items-center gap-3">
                         <span
-                          class="h-9 w-9 rounded-2xl bg-amber-50 text-amber-600 grid place-items-center"
+                          class="h-10 w-10 rounded-2xl bg-amber-50 text-amber-600 grid place-items-center"
                         >
-                          <PlusIcon />
+                          <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M12 5v14"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                            />
+                            <path
+                              d="M5 12h14"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                            />
+                          </svg>
                         </span>
                         <span class="text-[13px] font-semibold text-slate-900"
                           >Add Task</span
                         >
                       </span>
-                      <ArrowIcon />
+                      <ArrowRight />
                     </button>
 
                     <button
-                      type="button"
-                      class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition"
-                      @click="toast('Demo only: View all tasks.')"
+                      class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 flex items-center justify-between hover:bg-slate-50 transition"
                     >
                       <span class="flex items-center gap-3">
                         <span
-                          class="h-9 w-9 rounded-2xl bg-sky-50 text-sky-600 grid place-items-center"
+                          class="h-10 w-10 rounded-2xl bg-sky-50 text-sky-600 grid place-items-center"
                         >
-                          <ListIcon />
+                          <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M8 6h13"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                            />
+                            <path
+                              d="M8 12h13"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                            />
+                            <path
+                              d="M8 18h13"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                            />
+                            <path
+                              d="M3 6h.01"
+                              stroke="currentColor"
+                              stroke-width="4"
+                              stroke-linecap="round"
+                            />
+                            <path
+                              d="M3 12h.01"
+                              stroke="currentColor"
+                              stroke-width="4"
+                              stroke-linecap="round"
+                            />
+                            <path
+                              d="M3 18h.01"
+                              stroke="currentColor"
+                              stroke-width="4"
+                              stroke-linecap="round"
+                            />
+                          </svg>
                         </span>
                         <span class="text-[13px] font-semibold text-slate-900"
                           >View All Tasks</span
                         >
                       </span>
-                      <ArrowIcon />
+                      <ArrowRight />
                     </button>
 
                     <button
-                      type="button"
-                      class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition"
-                      @click="toast('Demo only: Import/Export UI.')"
+                      class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 flex items-center justify-between hover:bg-slate-50 transition"
                     >
                       <span class="flex items-center gap-3">
                         <span
-                          class="h-9 w-9 rounded-2xl bg-emerald-50 text-emerald-600 grid place-items-center"
+                          class="h-10 w-10 rounded-2xl bg-emerald-50 text-emerald-600 grid place-items-center"
                         >
-                          <DownloadIcon />
+                          <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M12 3v10"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                            />
+                            <path
+                              d="M8 10l4 4 4-4"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                            <path
+                              d="M4 17v3h16v-3"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                            />
+                          </svg>
                         </span>
                         <span class="text-[13px] font-semibold text-slate-900"
                           >Import / Export</span
                         >
                       </span>
-                      <ArrowIcon />
+                      <ArrowRight />
                     </button>
                   </div>
                 </div>
 
                 <!-- Upcoming -->
-                <div class="rounded-2xl border border-slate-100 bg-white p-4">
+                <div
+                  class="rounded-2xl bg-white border border-slate-100 shadow-[0_10px_30px_rgba(15,23,42,0.04)] p-5"
+                >
                   <div class="flex items-center justify-between">
                     <p
                       class="text-[12px] font-extrabold tracking-[2px] text-slate-900"
@@ -311,15 +737,14 @@
                       Upcoming
                     </p>
                     <button
-                      type="button"
                       class="text-[12px] font-semibold text-sky-600 hover:underline"
-                      @click="toast('Demo only: Upcoming list.')"
+                      type="button"
                     >
                       View
                     </button>
                   </div>
 
-                  <div class="mt-3 space-y-3">
+                  <div class="mt-4 space-y-3">
                     <div
                       v-for="u in upcoming"
                       :key="u.id"
@@ -337,14 +762,16 @@
                         </span>
                       </div>
                       <span class="text-slate-400">
-                        <ArrowIcon />
+                        <ArrowRight />
                       </span>
                     </div>
                   </div>
                 </div>
 
                 <!-- Notes -->
-                <div class="rounded-2xl border border-slate-100 bg-white p-4">
+                <div
+                  class="rounded-2xl bg-white border border-slate-100 shadow-[0_10px_30px_rgba(15,23,42,0.04)] p-5"
+                >
                   <p
                     class="text-[12px] font-extrabold tracking-[2px] text-slate-900"
                   >
@@ -357,7 +784,7 @@
                   </p>
 
                   <div
-                    class="mt-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4"
+                    class="mt-4 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4"
                   >
                     <p class="text-[12px] text-slate-600 leading-5">
                       Break large tasks into smaller steps to finish faster.
@@ -367,130 +794,335 @@
               </aside>
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+        </div>
 
-    <!-- Tiny toast (demo) -->
-    <div
-      v-show="toastOpen"
-      class="fixed left-1/2 -translate-x-1/2 bottom-6 z-50"
-    >
-      <div
-        class="rounded-2xl bg-slate-900 text-white px-4 py-3 text-[13px] shadow-lg"
-      >
-        {{ toastMsg }}
-      </div>
+        <!-- Ilustrasi orang BESAR di kiri bawah (seperti referensi) -->
+        <img
+          :src="sidebarPerson"
+          alt="Person"
+          class="pointer-events-none select-none absolute bottom-0 left-6 w-[260px] hidden lg:block"
+          draggable="false"
+        />
+
+        <!-- Toasts (opsional) -->
+        <div class="fixed top-6 right-6 z-[60] space-y-3">
+          <div
+            v-for="t in toasts"
+            :key="t.id"
+            class="w-[320px] rounded-2xl bg-white border border-slate-100 shadow-[0_18px_60px_rgba(15,23,42,0.12)] px-4 py-3"
+          >
+            <p class="text-[13px] font-extrabold text-slate-900">
+              {{ t.title }}
+            </p>
+            <p class="mt-1 text-[12px] text-slate-600">{{ t.message }}</p>
+          </div>
+        </div>
+      </main>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-// kalau kamu punya auth store, boleh dipakai. kalau tidak, aman karena try/catch.
-// import { useAuthStore } from "@/stores/auth";
+import { computed, ref, onMounted, onBeforeUnmount, watchEffect } from "vue";
 
 import logo from "@/assets/Taskly-logo.png";
-// pakai asset yang sudah kamu punya (ubah sesuai nama file kamu)
-import illustration from "@/assets/login-illustration.png";
+import avatar from "@/assets/avatar.png";
+import sidebarPerson from "@/assets/taskly_dashboard_person_transparent.png";
+import dashboardIcon from "@/assets/dashboard.svg";
 
-/** nav */
 const activeNav = ref("dashboard");
-const nav = [
-  { key: "dashboard", label: "Dashboard", icon: DashboardIcon },
-  { key: "tasks", label: "Tasks", icon: TasksIcon },
-  { key: "settings", label: "Settings", icon: SettingsIcon },
-];
+const nav = [{ key: "dashboard", label: "Dashboard", icon: dashboardIcon }];
 
-/** user display */
-const userName = computed(() => {
-  // const auth = useAuthStore()
-  // return auth?.user?.name || "Darwin"
-  return "Darwin";
+const userName = computed(() => "Darwin");
+
+const now = ref(Date.now());
+let timerId;
+
+onMounted(() => {
+  timerId = setInterval(() => (now.value = Date.now()), 60_000); // update tiap 1 menit
 });
-const initials = computed(() => {
-  const name = userName.value || "U";
-  const parts = name.trim().split(" ");
-  const first = parts[0]?.[0] || "U";
-  const last = parts.length > 1 ? parts[parts.length - 1]?.[0] : "";
-  return (first + last).toUpperCase();
+onBeforeUnmount(() => clearInterval(timerId));
+
+function startOfToday() {
+  const d = new Date(now.value);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function isSameDay(a, b) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+// demo helper: bikin dueAt untuk "hari ini jam x"
+function todayAt(h, m) {
+  const d = new Date();
+  d.setHours(h, m, 0, 0);
+  return d.toISOString();
+}
+
+// format tampilan seperti "Today, 5:00 PM" atau "Jan 6, 5:00 PM"
+function formatWhen(iso) {
+  const d = new Date(iso);
+  const t = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+
+  if (isSameDay(d, new Date(now.value))) return `Today, ${t}`;
+
+  const datePart = d.toLocaleDateString([], {
+    month: "short",
+    day: "numeric",
+  });
+  return `${datePart}, ${t}`;
+}
+
+const baseVisibleTasks = computed(() => {
+  if (activeList.value === "overdue") return overdueTasks.value;
+  if (activeList.value === "completed") return completedTasks.value;
+  return todayTasks.value;
 });
 
-/** dummy tasks */
+const visibleTasks = computed(() => {
+  const q = (searchQuery.value || "").trim().toLowerCase();
+  if (!q) return baseVisibleTasks.value;
+
+  return baseVisibleTasks.value.filter((t) => {
+    const haystack = [t.title, t.priority, ...(t.tags || [])]
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(q);
+  });
+});
+
+const listTitle = computed(() => {
+  if (activeList.value === "overdue") return "Overdue Tasks";
+  if (activeList.value === "completed") return "Completed Tasks";
+  return "Today Tasks";
+});
+
+const searchQuery = ref("");
+
+const filteredTodayTasks = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase();
+  if (!q) return todayTasks.value;
+
+  return todayTasks.value.filter((t) => {
+    const haystack = [t.title, t.when, t.priority, ...(t.tags || [])]
+      .join(" ")
+      .toLowerCase();
+
+    return haystack.includes(q);
+  });
+});
+
 const tasks = ref([
   {
     id: 1,
     title: "Finish UI wireframe for Login",
-    when: "Today, 5:00 PM",
+    dueAt: todayAt(17, 0), // today 5:00 PM
     tags: ["UI/UX"],
     priority: "High",
     done: false,
-    status: "today",
   },
   {
     id: 2,
     title: "Finish UI wireframe for Login",
-    when: "Today, 10:00 PM",
+    dueAt: todayAt(22, 0), // today 10:00 PM
     tags: ["QA"],
     priority: "Medium",
     done: false,
-    status: "today",
   },
   {
     id: 3,
     title: "Create test cases for Login",
-    when: "Today, 12:00 AM",
+    dueAt: todayAt(0, 0), // today 12:00 AM
     tags: ["Study"],
     priority: "Low",
     done: false,
-    status: "today",
   },
+
+  // contoh overdue (kemarin)
   {
     id: 4,
-    title: "Update dashboard spacing",
-    when: "Yesterday, 6:00 PM",
-    tags: ["UI/UX"],
-    priority: "High",
+    title: "Fix landing page spacing",
+    dueAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    tags: ["UI"],
+    priority: "Medium",
     done: false,
-    status: "overdue",
   },
+
+  // contoh completed
   {
     id: 5,
-    title: "Clean up components",
-    when: "Mon, 9:00 AM",
-    tags: ["Refactor"],
+    title: "Update README",
+    dueAt: todayAt(9, 30),
+    tags: ["Docs"],
     priority: "Low",
     done: true,
-    status: "completed",
   },
 ]);
 
-const todayTasks = computed(() =>
-  tasks.value.filter((t) => t.status === "today")
-);
-const todayCount = computed(
-  () => todayTasks.value.filter((t) => !t.done).length
-);
-const overdueCount = computed(
-  () => tasks.value.filter((t) => t.status === "overdue" && !t.done).length
-);
-const completedCount = computed(
-  () => tasks.value.filter((t) => t.done || t.status === "completed").length
-);
+const todayTasks = computed(() => {
+  const tdy = new Date(now.value);
+  return tasks.value.filter((t) => {
+    const due = new Date(t.dueAt);
+    return !t.done && isSameDay(due, tdy);
+  });
+});
+
+const overdueTasks = computed(() => {
+  const s = startOfToday();
+  return tasks.value.filter((t) => !t.done && new Date(t.dueAt) < s);
+});
+
+const completedTasks = computed(() => tasks.value.filter((t) => t.done));
+
+const todayCount = computed(() => todayTasks.value.length);
+const overdueCount = computed(() => overdueTasks.value.length);
+const completedCount = computed(() => completedTasks.value.length);
 
 function toggleDone(id) {
   const t = tasks.value.find((x) => x.id === id);
   if (!t) return;
+
+  const wasDone = t.done;
   t.done = !t.done;
-  // demo: kalau done, anggap completed
-  t.status = t.done
-    ? "completed"
-    : t.status === "completed"
-    ? "today"
-    : t.status;
+
+  // kalau baru selesai (done = true)
+  if (!wasDone && t.done) {
+    pushNotification({
+      type: "completed",
+      title: "Task Completed",
+      message: `"${t.title}" has been completed.`,
+    });
+  }
 }
 
-/** Upcoming dummy */
+// ===== Notifications =====
+const notifOpen = ref(false);
+const notifRef = ref(null);
+
+const notifications = ref([]); // {id, type, title, message, ts, read}
+const unreadCount = computed(
+  () => notifications.value.filter((n) => !n.read).length
+);
+
+// toast (opsional)
+const toasts = ref([]); // {id, title, message}
+function pushToast(title, message) {
+  const id = crypto?.randomUUID?.() || String(Date.now() + Math.random());
+  toasts.value.push({ id, title, message });
+  setTimeout(() => {
+    toasts.value = toasts.value.filter((t) => t.id !== id);
+  }, 2800);
+}
+
+function pushNotification({ type = "info", title, message }) {
+  const id = crypto?.randomUUID?.() || String(Date.now() + Math.random());
+  notifications.value.unshift({
+    id,
+    type,
+    title,
+    message,
+    ts: Date.now(),
+    read: false,
+  });
+
+  // toast muncul tiap ada notif masuk (hapus kalau nggak mau)
+  pushToast(title, message);
+}
+
+function markAllRead() {
+  notifications.value = notifications.value.map((n) => ({ ...n, read: true }));
+}
+
+function markRead(id) {
+  notifications.value = notifications.value.map((n) =>
+    n.id === id ? { ...n, read: true } : n
+  );
+}
+
+function clearAllNotifs() {
+  notifications.value = [];
+}
+
+function notifTone(type) {
+  if (type === "overdue")
+    return "bg-rose-50 text-rose-700 ring-1 ring-rose-100";
+  if (type === "completed")
+    return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100";
+  return "bg-slate-50 text-slate-700 ring-1 ring-slate-100";
+}
+
+function timeAgo(ts) {
+  const diff = Math.max(0, Date.now() - ts);
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return `${d}d ago`;
+}
+
+// ===== Avatar dropdown =====
+const avatarOpen = ref(false);
+const avatarRef = ref(null);
+
+function goProfile() {
+  // contoh: router.push('/profile')
+  console.log("Profile clicked");
+}
+
+function goSettings() {
+  // contoh: router.push('/settings')
+  console.log("Settings clicked");
+}
+
+function doLogout() {
+  // contoh: logout logic
+  console.log("Logout clicked");
+}
+
+// Close dropdown kalau klik di luar
+function onDocClick(e) {
+  // tutup notif kalau klik di luar
+  if (notifOpen.value) {
+    const el = notifRef.value;
+    if (el && !el.contains(e.target)) notifOpen.value = false;
+  }
+
+  // tutup avatar dropdown kalau klik di luar
+  if (avatarOpen.value) {
+    const el2 = avatarRef.value;
+    if (el2 && !el2.contains(e.target)) avatarOpen.value = false;
+  }
+}
+
+onMounted(() => document.addEventListener("click", onDocClick));
+onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
+
+// Trigger notif ketika task masuk overdue (sekali per task)
+const notifiedOverdueIds = new Set();
+
+watchEffect(() => {
+  // akses overdueTasks biar reactive
+  overdueTasks.value.forEach((t) => {
+    if (!notifiedOverdueIds.has(t.id)) {
+      notifiedOverdueIds.add(t.id);
+      pushNotification({
+        type: "overdue",
+        title: "Task Overdue",
+        message: `"${t.title}" is overdue.`,
+      });
+    }
+  });
+});
+
+const activeList = ref("today"); // 'today' | 'overdue' | 'completed'
+
 const upcoming = ref([
   {
     id: "u1",
@@ -507,136 +1139,17 @@ const upcoming = ref([
   { id: "u3", day: "Thu", title: "Review user flow", tone: "text-amber-600" },
 ]);
 
-/** quick actions */
-const showQuick = ref(true);
-
-/** demo toast */
-const toastOpen = ref(false);
-const toastMsg = ref("");
-let toastTimer;
-function toast(message) {
-  toastMsg.value = message;
-  toastOpen.value = true;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => (toastOpen.value = false), 1200);
+function priorityPill(p) {
+  if (p === "High") return "bg-rose-50 text-rose-700 ring-1 ring-rose-100";
+  if (p === "Medium") return "bg-amber-50 text-amber-700 ring-1 ring-amber-100";
+  return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100";
 }
 
-/** styles helpers */
-function priorityBadge(priority) {
-  if (priority === "High") return "bg-rose-50 text-rose-700 ring-rose-100";
-  if (priority === "Medium") return "bg-amber-50 text-amber-700 ring-amber-100";
-  return "bg-emerald-50 text-emerald-700 ring-emerald-100";
-}
-
-/** small local components */
-const StatPill = {
-  props: { label: String, value: Number, tone: String },
+const ArrowRight = {
   template: `
-    <div
-      class="flex items-center gap-3 rounded-2xl px-4 py-3 ring-1"
-      :class="toneClass"
-    >
-      <span class="text-[12px] font-extrabold tracking-[2px]" :class="labelClass">{{ label }}</span>
-      <span class="text-[14px] font-extrabold" :class="valueClass">{{ value }}</span>
-    </div>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   `,
-  computed: {
-    toneClass() {
-      if (this.tone === "rose") return "bg-rose-50 ring-rose-100";
-      if (this.tone === "emerald") return "bg-emerald-50 ring-emerald-100";
-      return "bg-sky-50 ring-sky-100";
-    },
-    labelClass() {
-      if (this.tone === "rose") return "text-rose-700";
-      if (this.tone === "emerald") return "text-emerald-700";
-      return "text-sky-700";
-    },
-    valueClass() {
-      if (this.tone === "rose") return "text-rose-800";
-      if (this.tone === "emerald") return "text-emerald-800";
-      return "text-sky-800";
-    },
-  },
 };
-
-/** icons (inline SVG) */
-function iconWrap(svg) {
-  return { template: svg };
-}
-
-const DashboardIcon = iconWrap(`
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-  <path d="M4 4h7v7H4V4Z" stroke="currentColor" stroke-width="2" />
-  <path d="M13 4h7v4h-7V4Z" stroke="currentColor" stroke-width="2" />
-  <path d="M13 10h7v10h-7V10Z" stroke="currentColor" stroke-width="2" />
-  <path d="M4 13h7v7H4v-7Z" stroke="currentColor" stroke-width="2" />
-</svg>`);
-
-const TasksIcon = iconWrap(`
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-  <path d="M9 6h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <path d="M9 12h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <path d="M9 18h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <path d="M4 6h.01" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-  <path d="M4 12h.01" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-  <path d="M4 18h.01" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-</svg>`);
-
-const SettingsIcon = iconWrap(`
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-  <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="2"/>
-  <path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.03.03a2.2 2.2 0 0 1-1.56 3.76 2.2 2.2 0 0 1-1.56-.65l-.03-.03A1.8 1.8 0 0 0 15 19.4a1.8 1.8 0 0 0-1 1.64V21a2.2 2.2 0 0 1-4.4 0v-.04a1.8 1.8 0 0 0-1-1.64 1.8 1.8 0 0 0-1.98.36l-.03.03a2.2 2.2 0 0 1-3.76-1.56 2.2 2.2 0 0 1 .65-1.56l.03-.03A1.8 1.8 0 0 0 4.6 15a1.8 1.8 0 0 0-1.64-1H3a2.2 2.2 0 0 1 0-4.4h-.04A1.8 1.8 0 0 0 4.6 8.6a1.8 1.8 0 0 0-.36-1.98l-.03-.03A2.2 2.2 0 0 1 5.77 2.83c.58 0 1.14.23 1.56.65l.03.03A1.8 1.8 0 0 0 9 4.6a1.8 1.8 0 0 0 1-1.64V3a2.2 2.2 0 0 1 4.4 0v.04a1.8 1.8 0 0 0 1 1.64 1.8 1.8 0 0 0 1.98-.36l.03-.03a2.2 2.2 0 0 1 3.76 1.56 2.2 2.2 0 0 1-.65 1.56l-.03.03A1.8 1.8 0 0 0 19.4 9c.77 0 1.46.48 1.72 1.2.06.16.09.34.09.52a2.2 2.2 0 0 1-1.81 2.18H19.4a1.8 1.8 0 0 0 0 2.1Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`);
-
-const SearchIcon = iconWrap(`
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-  <path d="M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Z" stroke="currentColor" stroke-width="2"/>
-  <path d="M20 20l-4.2-4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-</svg>`);
-
-const BellIcon = iconWrap(`
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-  <path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 7h18s-3 0-3-7Z" stroke="currentColor" stroke-width="2"/>
-  <path d="M13.7 21a2 2 0 0 1-3.4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-</svg>`);
-
-const DotsIcon = iconWrap(`
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-  <path d="M12 6h.01" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-  <path d="M12 12h.01" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-  <path d="M12 18h.01" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-</svg>`);
-
-const PlusIcon = iconWrap(`
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-  <path d="M12 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-</svg>`);
-
-const ListIcon = iconWrap(`
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-  <path d="M8 6h13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <path d="M8 12h13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <path d="M8 18h13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <path d="M3 6h.01" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-  <path d="M3 12h.01" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-  <path d="M3 18h.01" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-</svg>`);
-
-const DownloadIcon = iconWrap(`
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-  <path d="M12 3v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-  <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M4 17v3h16v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-</svg>`);
-
-const ArrowIcon = iconWrap(`
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-  <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`);
-
-const ChevronIcon = iconWrap(`
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-  <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`);
 </script>
