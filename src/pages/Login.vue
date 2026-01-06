@@ -310,7 +310,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, ref } from "vue";
+import { computed, nextTick, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 import logo from "@/assets/Taskly-logo.png";
@@ -321,6 +321,22 @@ const router = useRouter();
 const email = ref("");
 const password = ref("");
 const remember = ref(true);
+
+const REMEMBER_KEY = "taskly_remember";
+const EMAIL_KEY = "taskly_email";
+const AUTH_KEY = "taskly_token_demo";
+
+onMounted(() => {
+  const remembered = localStorage.getItem(REMEMBER_KEY) === "1";
+  remember.value = remembered;
+
+  if (remembered) {
+    const savedEmail = localStorage.getItem(EMAIL_KEY) || "";
+    email.value = savedEmail;
+  } else {
+    localStorage.removeItem(EMAIL_KEY);
+  }
+});
 
 const showPassword = ref(false);
 const isSubmitting = ref(false);
@@ -398,6 +414,17 @@ const onSubmit = async () => {
     // DEMO: simulasi delay
     await new Promise((r) => setTimeout(r, 550));
     showToast("Demo login success ✅ (no data saved)", "success");
+
+    // Remember me behavior (demo)
+    if (remember.value) {
+      localStorage.setItem(REMEMBER_KEY, "1");
+      localStorage.setItem(EMAIL_KEY, email.value.trim());
+      localStorage.setItem(AUTH_KEY, "demo-token"); // token demo biar bisa dipakai guard
+    } else {
+      localStorage.setItem(REMEMBER_KEY, "0");
+      localStorage.removeItem(EMAIL_KEY);
+      sessionStorage.setItem(AUTH_KEY, "demo-token"); // token hanya untuk sesi ini
+    }
 
     router.replace("/Home");
   } catch (e) {

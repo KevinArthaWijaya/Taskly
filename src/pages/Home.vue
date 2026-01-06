@@ -543,37 +543,148 @@
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      class="h-10 w-10 rounded-2xl hover:bg-slate-50 active:bg-slate-100 grid place-items-center text-slate-500"
-                      aria-label="Task menu"
-                    >
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
+                    <!-- Task menu (3 dots) -->
+                    <div class="relative" @click.stop>
+                      <button
+                        type="button"
+                        class="h-10 w-10 rounded-2xl hover:bg-slate-50 active:bg-slate-100 grid place-items-center text-slate-500"
+                        aria-label="Task menu"
+                        @click="toggleTaskMenu(t.id)"
                       >
-                        <path
-                          d="M12 6h.01"
-                          stroke="currentColor"
-                          stroke-width="4"
-                          stroke-linecap="round"
-                        />
-                        <path
-                          d="M12 12h.01"
-                          stroke="currentColor"
-                          stroke-width="4"
-                          stroke-linecap="round"
-                        />
-                        <path
-                          d="M12 18h.01"
-                          stroke="currentColor"
-                          stroke-width="4"
-                          stroke-linecap="round"
-                        />
-                      </svg>
-                    </button>
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M12 6h.01"
+                            stroke="currentColor"
+                            stroke-width="4"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M12 12h.01"
+                            stroke="currentColor"
+                            stroke-width="4"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M12 18h.01"
+                            stroke="currentColor"
+                            stroke-width="4"
+                            stroke-linecap="round"
+                          />
+                        </svg>
+                      </button>
+
+                      <!-- Dropdown -->
+                      <div
+                        v-if="taskMenuOpenId === t.id"
+                        class="absolute right-0 mt-2 w-[170px] rounded-2xl bg-white border border-slate-100 shadow-[0_18px_60px_rgba(15,23,42,0.12)] overflow-hidden z-50"
+                      >
+                        <button
+                          type="button"
+                          class="w-full px-4 py-3 flex items-center gap-3 hover:bg-slate-50 transition text-left"
+                          @click="openEditTask(t)"
+                        >
+                          <!-- pencil icon -->
+                          <span
+                            class="h-8 w-8 rounded-xl bg-sky-50 text-sky-600 ring-1 ring-sky-100 grid place-items-center"
+                          >
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <path
+                                d="M12 20h9"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                              />
+                              <path
+                                d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5Z"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+                          </span>
+                          <div>
+                            <p
+                              class="text-[13px] font-extrabold text-slate-900"
+                            >
+                              Edit
+                            </p>
+                            <p class="text-[12px] text-slate-500">
+                              Update task
+                            </p>
+                          </div>
+                        </button>
+
+                        <div class="h-px bg-slate-100"></div>
+
+                        <button
+                          type="button"
+                          class="w-full px-4 py-3 flex items-center gap-3 hover:bg-rose-50 transition text-left"
+                          @click="requestDeleteTask(t.id)"
+                        >
+                          <!-- trash icon -->
+                          <span
+                            class="h-8 w-8 rounded-xl bg-rose-50 text-rose-600 ring-1 ring-rose-100 grid place-items-center"
+                          >
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <path
+                                d="M4 7h16"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                              />
+                              <path
+                                d="M10 11v6"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                              />
+                              <path
+                                d="M14 11v6"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                              />
+                              <path
+                                d="M6 7l1 14h10l1-14"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linejoin="round"
+                              />
+                              <path
+                                d="M9 7V4h6v3"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                              />
+                            </svg>
+                          </span>
+                          <div>
+                            <p class="text-[13px] font-extrabold text-rose-700">
+                              Delete
+                            </p>
+                            <p class="text-[12px] text-rose-600/70">
+                              Remove task
+                            </p>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -817,6 +928,246 @@
             <p class="mt-1 text-[12px] text-slate-600">{{ t.message }}</p>
           </div>
         </div>
+
+        <!-- Edit Modal -->
+        <div v-if="editOpen" class="fixed inset-0 z-[70]">
+          <div
+            class="absolute inset-0 bg-slate-900/30"
+            @click="editOpen = false"
+          ></div>
+
+          <div class="absolute inset-0 grid place-items-center p-4">
+            <div
+              class="w-full max-w-lg rounded-3xl bg-white border border-slate-100 shadow-[0_28px_80px_rgba(15,23,42,0.18)] overflow-hidden"
+            >
+              <div
+                class="px-6 py-4 border-b border-slate-100 flex items-center justify-between"
+              >
+                <p
+                  class="text-[13px] font-extrabold tracking-[2px] text-slate-900"
+                >
+                  EDIT TASK
+                </p>
+                <button
+                  type="button"
+                  class="h-9 w-9 rounded-2xl hover:bg-slate-50 grid place-items-center text-slate-500"
+                  @click="editOpen = false"
+                  aria-label="Close"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M18 6L6 18M6 6l12 12"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="px-6 py-5 space-y-4">
+                <div class="space-y-2">
+                  <label
+                    class="text-[12px] font-semibold text-slate-500 tracking-[1.2px]"
+                    >Title</label
+                  >
+                  <input
+                    v-model="editForm.title"
+                    type="text"
+                    class="w-full h-12 rounded-2xl px-4 text-[14px] border border-slate-200 outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-200"
+                  />
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                  <div class="space-y-2">
+                    <label
+                      class="text-[12px] font-semibold text-slate-500 tracking-[1.2px]"
+                      >Due date</label
+                    >
+                    <input
+                      v-model="editForm.dueLocal"
+                      type="datetime-local"
+                      class="w-full h-12 rounded-2xl px-4 text-[14px] border border-slate-200 outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-200"
+                    />
+                  </div>
+
+                  <div class="space-y-2">
+                    <label
+                      class="text-[12px] font-semibold text-slate-500 tracking-[1.2px]"
+                      >Priority</label
+                    >
+                    <select
+                      v-model="editForm.priority"
+                      class="w-full h-12 rounded-2xl px-4 text-[14px] border border-slate-200 outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-200 bg-white"
+                    >
+                      <option>Low</option>
+                      <option>Medium</option>
+                      <option>High</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <label
+                    class="text-[12px] font-semibold text-slate-500 tracking-[1.2px]"
+                    >Tags (comma separated)</label
+                  >
+                  <input
+                    v-model="editForm.tagsText"
+                    type="text"
+                    placeholder="UI/UX, QA"
+                    class="w-full h-12 rounded-2xl px-4 text-[14px] border border-slate-200 outline-none focus:ring-2 focus:ring-sky-200 focus:border-sky-200"
+                  />
+                </div>
+              </div>
+
+              <div
+                class="px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3"
+              >
+                <button
+                  type="button"
+                  class="h-11 px-4 rounded-2xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50"
+                  @click="editOpen = false"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  class="h-11 px-5 rounded-2xl bg-sky-600 text-white font-bold hover:bg-sky-700"
+                  @click="saveEditTask"
+                >
+                  Save changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete Confirm Modal -->
+        <div
+          v-if="deleteConfirmOpen"
+          class="fixed inset-0 z-[80]"
+          @keydown.esc="cancelDeleteTask"
+        >
+          <!-- overlay -->
+          <div
+            class="absolute inset-0 bg-slate-900/35"
+            @click="cancelDeleteTask"
+          ></div>
+
+          <!-- modal -->
+          <div class="absolute inset-0 grid place-items-center p-4">
+            <div
+              class="w-full max-w-md rounded-3xl bg-white border border-slate-100 shadow-[0_28px_80px_rgba(15,23,42,0.18)] overflow-hidden"
+              @click.stop
+            >
+              <div class="px-6 pt-6 pb-4">
+                <div class="flex items-start gap-4">
+                  <div
+                    class="h-12 w-12 rounded-2xl bg-rose-50 text-rose-600 ring-1 ring-rose-100 grid place-items-center"
+                  >
+                    <!-- trash icon -->
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M4 7h16"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M10 11v6"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M14 11v6"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M6 7l1 14h10l1-14"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M9 7V4h6v3"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </div>
+
+                  <div class="min-w-0">
+                    <p class="text-[16px] font-extrabold text-slate-900">
+                      Delete this task?
+                    </p>
+                    <p class="mt-1 text-[13px] text-slate-600 leading-5">
+                      This action can’t be undone. Task:
+                      <span class="font-semibold text-slate-800">
+                        "{{ deleteTarget?.title }}"
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="px-6 pb-6 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  class="h-11 px-4 rounded-2xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 active:bg-slate-100"
+                  @click="cancelDeleteTask"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  class="h-11 px-5 rounded-2xl bg-rose-600 text-white font-extrabold hover:bg-rose-700 active:bg-rose-800 inline-flex items-center gap-2"
+                  @click="confirmDeleteTask"
+                >
+                  <!-- trash icon -->
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M4 7h16"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M10 11v6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M14 11v6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M6 7l1 14h10l1-14"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M9 7V4h6v3"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   </div>
@@ -824,6 +1175,7 @@
 
 <script setup>
 import { computed, ref, onMounted, onBeforeUnmount, watchEffect } from "vue";
+import { useRouter } from "vue-router";
 
 import logo from "@/assets/Taskly-logo.png";
 import avatar from "@/assets/avatar.png";
@@ -834,6 +1186,7 @@ const activeNav = ref("dashboard");
 const nav = [{ key: "dashboard", label: "Dashboard", icon: dashboardIcon }];
 
 const userName = computed(() => "Darwin");
+const router = useRouter();
 
 const now = ref(Date.now());
 let timerId;
@@ -964,6 +1317,82 @@ const tasks = ref([
   },
 ]);
 
+// ===== Task (3 dots) menu =====
+const taskMenuOpenId = ref(null);
+
+// Edit modal
+const editOpen = ref(false);
+const editForm = ref({
+  id: null,
+  title: "",
+  dueLocal: "", // untuk input datetime-local
+  priority: "Low",
+  tagsText: "", // "UI/UX, QA"
+});
+
+// helper: ISO -> "YYYY-MM-DDTHH:mm"
+function isoToLocalInput(iso) {
+  const d = new Date(iso);
+  const pad = (n) => String(n).padStart(2, "0");
+  const y = d.getFullYear();
+  const m = pad(d.getMonth() + 1);
+  const day = pad(d.getDate());
+  const hh = pad(d.getHours());
+  const mm = pad(d.getMinutes());
+  return `${y}-${m}-${day}T${hh}:${mm}`;
+}
+
+// helper: "YYYY-MM-DDTHH:mm" -> ISO
+function localInputToIso(localStr) {
+  // ini akan dianggap local time oleh browser
+  const d = new Date(localStr);
+  return d.toISOString();
+}
+
+function toggleTaskMenu(id) {
+  taskMenuOpenId.value = taskMenuOpenId.value === id ? null : id;
+}
+
+function openEditTask(t) {
+  editForm.value = {
+    id: t.id,
+    title: t.title,
+    dueLocal: isoToLocalInput(t.dueAt),
+    priority: t.priority,
+    tagsText: (t.tags || []).join(", "),
+  };
+  editOpen.value = true;
+  taskMenuOpenId.value = null;
+}
+
+function saveEditTask() {
+  const f = editForm.value;
+  const t = tasks.value.find((x) => x.id === f.id);
+  if (!t) return;
+
+  t.title = f.title.trim() || t.title;
+  t.dueAt = localInputToIso(f.dueLocal);
+  t.priority = f.priority;
+
+  t.tags = f.tagsText
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  editOpen.value = false;
+}
+
+function deleteTask(id) {
+  const t = tasks.value.find((x) => x.id === id);
+  if (!t) return;
+
+  const ok = window.confirm(`Delete task: "${t.title}" ?`);
+  if (!ok) return;
+
+  tasks.value = tasks.value.filter((x) => x.id !== id);
+  taskMenuOpenId.value = null;
+}
+
 const todayTasks = computed(() => {
   const tdy = new Date(now.value);
   return tasks.value.filter((t) => {
@@ -1082,8 +1511,11 @@ function goSettings() {
 }
 
 function doLogout() {
-  // contoh: logout logic
-  console.log("Logout clicked");
+  localStorage.removeItem("taskly_token_demo");
+  sessionStorage.removeItem("taskly_token_demo");
+
+  // kalau kamu ingin tetap ingat email saat remember me = true, JANGAN hapus EMAIL_KEY
+  router.replace("/login");
 }
 
 // Close dropdown kalau klik di luar
@@ -1099,6 +1531,8 @@ function onDocClick(e) {
     const el2 = avatarRef.value;
     if (el2 && !el2.contains(e.target)) avatarOpen.value = false;
   }
+
+  taskMenuOpenId.value = null;
 }
 
 onMounted(() => document.addEventListener("click", onDocClick));
@@ -1152,4 +1586,34 @@ const ArrowRight = {
     </svg>
   `,
 };
+
+// ===== Delete confirm modal =====
+const deleteConfirmOpen = ref(false);
+const deleteTarget = ref(null); // simpan task yang mau dihapus
+
+function requestDeleteTask(id) {
+  const t = tasks.value.find((x) => x.id === id);
+  if (!t) return;
+  deleteTarget.value = { id: t.id, title: t.title };
+  deleteConfirmOpen.value = true;
+  taskMenuOpenId.value = null;
+}
+
+function confirmDeleteTask() {
+  if (!deleteTarget.value) return;
+  const id = deleteTarget.value.id;
+
+  tasks.value = tasks.value.filter((x) => x.id !== id);
+
+  // optional: notif/toast kalau kamu punya sistem notif
+  // pushNotification({ type: "info", title: "Task deleted", message: `"${deleteTarget.value.title}" removed.` });
+
+  deleteConfirmOpen.value = false;
+  deleteTarget.value = null;
+}
+
+function cancelDeleteTask() {
+  deleteConfirmOpen.value = false;
+  deleteTarget.value = null;
+}
 </script>
